@@ -129,20 +129,6 @@ const ExpenseForm = () => {
           />
         </div>
 
-        {/* Category Selection */}
-        <div>
-          <label className="block text-gray-600 font-medium">Category</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-          </select>
-        </div>
-
         {/* Submit Button */}
         <button
           type="submit"
