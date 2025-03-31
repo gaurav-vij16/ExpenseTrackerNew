@@ -2,13 +2,13 @@ const api_url = import.meta.env.VITE_API_URL;
 
 export const fetchIncome = async () => {
     try {
-        const token = localStorage.getItem("token"); // Get token from localStorage
+        const token = localStorage.getItem("token"); 
 
         const res = await fetch(`${api_url}/api/v1/get-income`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`, // Send token in the request
+                "Authorization": `Bearer ${token}`, 
             },
         });
 
@@ -16,7 +16,7 @@ export const fetchIncome = async () => {
             throw new Error(`HTTP error! Status: ${res.status}`);
         }
 
-        return await res.json(); // Return the fetched data
+        return await res.json(); 
     } catch (error) {
         console.error('Error fetching income:', error);
         return [];
