@@ -11,13 +11,14 @@ const ExpenseForm = () => {
     date: "",
   });
 
+  const api_url = import.meta.env.VITE_API_URL; // Ensure .env contains VITE_API_URL
+
   const handleChange = (e) => {
     let { name, value } = e.target;
 
     if (name === "date") {
-      const formattedDate = new Date(value).toISOString().split("T")[0];
-      value = formattedDate;
-    }
+      value = new Date(value).toISOString().split("T")[0]; // Ensuring proper date format
+    } 
     if (name === "amount") {
       value = Number(value); // Convert amount to number
     }
@@ -27,24 +28,22 @@ const ExpenseForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const token = localStorage.getItem("token");
-    console.log("Token:", token);
 
-    if(!token){
-      toast.error("token expired");
-      return (0);
+    if (!token) {
+      toast.error("Token expired. Please log in again.");
+      return;
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/add-expense", {
+      const response = await fetch(`${api_url}/api/v1/add-expense`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
-      });      
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -52,8 +51,6 @@ const ExpenseForm = () => {
 
       const data = await response.json();
       console.log("Expense added successfully:", data);
-
-      // ✅ Show success toast
       toast.success("Expense added successfully!");
 
       // Reset form
@@ -64,19 +61,18 @@ const ExpenseForm = () => {
         description: "",
         date: "",
       });
-
     } catch (error) {
       console.error("Error adding expense:", error);
-
-      // ❌ Show error toast
-      toast.error("Error adding expense. Please try again.");
+      toast.error("Failed to add expense. Please try again.");
     }
   };
 
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md mt-6">
       <ToastContainer position="top-right" autoClose={3000} />
-      <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">Add Expense</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+        Add Expense
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Date */}
@@ -133,10 +129,24 @@ const ExpenseForm = () => {
           />
         </div>
 
+        {/* Category Selection */}
+        <div>
+          <label className="block text-gray-600 font-medium">Category</label>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+        </div>
+
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-purple-500 text-white py-2 rounded-lg font-bold hover:bg-purple-500 transition-all duration-300"
+          className="w-full bg-purple-500 text-white py-2 rounded-lg font-bold hover:bg-purple-600 transition-all duration-300"
         >
           Submit
         </button>

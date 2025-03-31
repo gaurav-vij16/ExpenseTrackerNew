@@ -3,20 +3,35 @@ import React, { useState } from "react";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const api_url = import.meta.env.VITE_API_URL;
 
   const handleLogin = async () => {
-    const response = await fetch("http://localhost:5000/api/v1/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    if (!username || !password) return;
 
-    const data = await response.json();
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      window.location.href = "/home";
-    } else {
-      alert("Login failed");
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${api_url}/api/v1/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        window.location.href = "/home";
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Something went wrong. Try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,9 +68,11 @@ const Login = () => {
 
         <button 
           onClick={handleLogin}
-          className="w-full bg-blue-600 text-white py-2 rounded mt-4 hover:bg-blue-700"
+          disabled={loading || !username || !password}
+          className={`w-full py-2 rounded mt-4 transition-all duration-300 
+            ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </div>
     </div>

@@ -7,38 +7,35 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const api_url = import.meta.env.VITE_API_URL;
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setError("");
+    if (!username || !email || !password) return;
+
+    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/auth/register", {
+      const response = await fetch(`${api_url}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data.msg || "Signup failed");
 
-      if (!response.ok) {
-        throw new Error(data.msg || "Signup failed");
-      }
-
-      // Save token in localStorage (or context)
       localStorage.setItem("token", data.token);
-
       toast.success("Signup successful! Redirecting...", { autoClose: 2000 });
 
-      setTimeout(() => {
-        navigate("/home"); // Redirect to home
-      }, 2000);
+      setTimeout(() => navigate("/home"), 2000);
     } catch (err) {
-      setError(err.message);
       toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,7 +52,6 @@ const Signup = () => {
               placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              required
               className="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-400"
             />
           </div>
@@ -67,7 +63,6 @@ const Signup = () => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
               className="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-400"
             />
           </div>
@@ -79,20 +74,20 @@ const Signup = () => {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               className="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-400"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
+            disabled={loading || !username || !email || !password}
+            className={`w-full p-2 rounded-md transition-all duration-300 ${
+              loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
           >
-            Sign Up
+            {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
-
-        {error && <p className="mt-4 text-red-600 text-center">{error}</p>}
       </div>
     </div>
   );
