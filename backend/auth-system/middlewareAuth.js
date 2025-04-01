@@ -12,7 +12,14 @@ const authenticateToken = (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: 'Access denied: Invalid token' });
         }
-        req.user = decoded;
+
+        console.log("Decoded Token:", decoded); // 🔍 Debugging
+
+        if (!decoded.id) {
+            return res.status(403).json({ message: 'Invalid token: User ID missing' });
+        }
+
+        req.user = { id: decoded.id }; // ✅ Correctly set user ID
         next();
     });
 };

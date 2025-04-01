@@ -1,5 +1,5 @@
 const { z } = require("zod");
-const IncomeSchema = require("../models/income");
+const Income = require("../models/income"); // ✅ Use correct model reference
 
 // 🔹 Income Validation Schema
 const incomeValidationSchema = z.object({
@@ -7,19 +7,18 @@ const incomeValidationSchema = z.object({
     amount: z.number().positive("Amount must be a positive number"),
     category: z.string().min(3, "Category must be at least 3 characters long"),
     description: z.string().min(5, "Description must be at least 5 characters long"),
-    date: z.string().regex(
-        /^\d{4}-\d{2}-\d{2}$/,
-        "Invalid date format, use 'YYYY-MM-DD'"
-    ).transform((value) => new Date(value)), // Auto-convert to Date
+    date: z.string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use 'YYYY-MM-DD'")
+        .transform((value) => new Date(value)), // Auto-convert to Date
 });
 
-// 🔹 Add a New Income
+// 🔹 Add a New Income Entry
 exports.addIncome = async (req, res) => {
     try {
         const validatedData = incomeValidationSchema.parse(req.body);
-        validatedData.userId = req.user.id; // Assign the logged-in user
+        validatedData.userId = req.user.id; // ✅ Ensure user ID is assigned correctly
 
-        const income = new IncomeSchema(validatedData);
+        const income = new Income(validatedData);
         await income.save();
 
         res.status(201).json({ message: "Income added successfully", income });
@@ -32,14 +31,15 @@ exports.addIncome = async (req, res) => {
     }
 };
 
-// 🔹 Get User's Income
+// 🔹 Get Logged-in User's Income Entries
 exports.getIncome = async (req, res) => {
     try {
-        const income = await IncomeSchema.find({ userId: req.user.id }).sort({ createdAt: -1 });
-        res.status(200).json(income);
+        const userId = req.user.id; // ✅ Ensure we're fetching income for the logged-in user
+        const incomes = await Income.find({ userId }); // ✅ Make sure the query matches your schema field
+        res.status(200).json(incomes);
     } catch (error) {
         console.error("Error fetching income:", error);
-        res.status(500).json({ msg: "Server error" });
+        res.status(500).json({ message: "Error fetching income data" });
     }
 };
 
@@ -53,7 +53,7 @@ exports.deleteIncome = async (req, res) => {
             return res.status(400).json({ msg: "Invalid ID" });
         }
 
-        const income = await IncomeSchema.findOneAndDelete({ _id: id, userId: req.user.id });
+        const income = await Income.findOneAndDelete({ _id: id, userId: req.user.id }); // ✅ Use correct field for user association
 
         if (!income) {
             return res.status(404).json({ msg: "Income not found or unauthorized" });

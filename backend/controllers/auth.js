@@ -13,16 +13,11 @@ exports.register = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        user = new User({
-            username,
-            email,
-            password: hashedPassword,
-        });
-
+        user = new User({ username, email, password: hashedPassword });
         await user.save();
 
-        // Generate JWT after successful registration
-        const payload = { user: { id: user.id } };
+        // ✅ FIX: Store `id` at the top level
+        const payload = { id: user.id };  
 
         jwt.sign(
             payload,
@@ -30,7 +25,7 @@ exports.register = async (req, res) => {
             { expiresIn: '1h' },
             (err, token) => {
                 if (err) throw err;
-                res.status(201).json({ msg: 'User registered successfully', token }); 
+                res.status(201).json({ msg: 'User registered successfully', token });
             }
         );
 
@@ -44,24 +39,18 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     const { username, password } = req.body;
     try {
-        // Check if user exists
         let user = await User.findOne({ username });
         if (!user) {
             return res.status(400).json({ msg: 'Invalid credentials' });
         }
 
-        // Validate password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ msg: 'Invalid credentials' });
         }
 
-        // Generate JWT
-        const payload = {
-            user: {
-                id: user.id,
-            },
-        };
+        // ✅ FIX: Store `id` at the top level
+        const payload = { id: user.id };  
 
         jwt.sign(
             payload,

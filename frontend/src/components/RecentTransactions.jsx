@@ -10,6 +10,8 @@ const RecentTransactions = ({ refresh }) => {
             const incomes = await fetchIncome();
             const expenses = await fetchExpense();
 
+    
+
             const allTransactions = [...incomes, ...expenses]
                 .map(tx => ({
                     ...tx,
@@ -21,7 +23,7 @@ const RecentTransactions = ({ refresh }) => {
         };
 
         fetchTransactions();
-    }, []); 
+    }, [refresh]); 
 
     return (
         <div className="w-full max-w-[400px] mx-auto p-4 bg-white shadow-lg rounded-lg">
@@ -35,10 +37,10 @@ const RecentTransactions = ({ refresh }) => {
                                 <div>
                                     <p className="text-sm text-gray-600">{tx.title}</p>
                                     <p className="text-xs text-gray-500">
-                                        {tx.date.toLocaleDateString()} {/* ✅ Proper date format */}
+                                        {tx.date.toLocaleDateString()}
                                     </p>
                                 </div>
-                                <p className={`text-lg font-semibold ${tx.type === "income" ? "text-green-500" : "text-red-500"}`}>
+                                <p className={`text-lg font-semibold ${tx.category === "income" ? "text-green-600" : "text-purple-600"}`}>
                                     ₹{tx.amount}
                                 </p>
                             </li>

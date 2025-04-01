@@ -35,7 +35,9 @@ const Incomes = () => {
               <h3 className="text-xl font-semibold text-purple-700">
                 {item.title}
               </h3>
-              <p className="text-gray-600">Amount: ₹{item.amount}</p>
+              <p className="text-green-600 font-semibold">
+                Amount: ₹{item.amount}
+              </p>
               <p className="text-gray-500 text-sm">
                 {new Date(item.date).toLocaleDateString()}
               </p>

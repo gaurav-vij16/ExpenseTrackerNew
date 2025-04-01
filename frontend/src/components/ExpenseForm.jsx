@@ -31,41 +31,37 @@ const ExpenseForm = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      toast.error("Token expired. Please log in again.");
-      return;
+        toast.error("Authentication error: Please log in again.");
+        return;
     }
 
     try {
-      const response = await fetch(`${api_url}/api/v1/add-expense`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+        const response = await fetch(`${api_url}/api/v1/add-expense`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token.trim()}`, // ✅ Ensure no spaces
+            },
+            body: JSON.stringify(formData),
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+        if (!response.ok) {
+            const errorData = await response.json(); // Fetch error message
+            throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+        }
 
-      const data = await response.json();
-      console.log("Expense added successfully:", data);
-      toast.success("Expense added successfully!");
+        const data = await response.json();
+        console.log("Expense added successfully:", data);
+        toast.success("Expense added successfully!");
 
-      // Reset form
-      setFormData({
-        title: "",
-        amount: "",
-        category: "expense",
-        description: "",
-        date: "",
-      });
+        setFormData({ title: "", amount: "", category: "expense", description: "", date: "" });
+
     } catch (error) {
-      console.error("Error adding expense:", error);
-      toast.error("Failed to add expense. Please try again.");
+        console.error("Error adding expense:", error);
+        toast.error(error.message || "Failed to add expense. Please try again.");
     }
-  };
+};
+
 
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md mt-6">

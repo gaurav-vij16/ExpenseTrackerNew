@@ -7,7 +7,6 @@ import Home from "./Pages/Home";
 import Login from "./components/Login";
 import Signup from "./components/SignUp";
 import Welcome from "./Pages/Welcome";
-import './app.css';
 import Footer from "./components/Footer";
 
 // PrivateRoute Component
