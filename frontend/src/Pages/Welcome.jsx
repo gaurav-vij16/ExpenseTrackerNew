@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const Welcome = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6 text-center">
-      <h1 className="text-4xl font-bold text-gray-800">Welcome to Our App 🚀</h1>
+      <h1 className="text-4xl font-bold text-gray-800">Welcome</h1>
       <p className="text-lg text-gray-600 mt-3">Manage your transactions with ease. Get started now!</p>
       
       <div className="flex gap-4 mt-6">
