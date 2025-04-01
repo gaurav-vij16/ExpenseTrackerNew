@@ -5,7 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const protectedRoutes = require('./routes/transactions');
 const middlewareAuth = require("./auth-system/middlewareAuth");
 const path = require("path");
-require('dotenv').config();
+require('dotenv').config(); 
 
 const app = express();
 
@@ -28,7 +28,9 @@ app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
 });
 
-// Database connection
+
+console.log("DB_URL from .env:", process.env.DB_URL);
+
 mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log("Database connected successfully");
