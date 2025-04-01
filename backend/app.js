@@ -11,7 +11,11 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "https://expensetrackernew-9igl.onrender.com",
+    credentials:true
+}));
+
 
 const PORT = process.env.PORT || 5000;
 
