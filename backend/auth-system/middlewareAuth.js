@@ -19,7 +19,7 @@ const authenticateToken = (req, res, next) => {
             return res.status(403).json({ message: 'Invalid token: User ID missing' });
         }
 
-        req.user = { id: decoded.id }; // ✅ Correctly set user ID
+        req.user = { id: decoded.id }; 
         next();
     });
 };

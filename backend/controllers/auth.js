@@ -48,8 +48,6 @@ exports.login = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ msg: 'Invalid credentials' });
         }
-
-        // ✅ FIX: Store `id` at the top level
         const payload = { id: user.id };  
 
         jwt.sign(
